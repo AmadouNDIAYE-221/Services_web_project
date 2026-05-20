@@ -1,0 +1,17 @@
+-COMPILATION
+javac -cp "xmlrpc-client-3.1.3.jar;xmlrpc-server-3.1.3.jar;xmlrpc-common-3.1.3.jar;ws-commons-util-1.0.2.jar;commons-logging-1.2.jar;." *.java
+
+
+-Lancement Serveur : 
+java -cp "xmlrpc-client-3.1.3.jar;xmlrpc-server-3.1.3.jar;xmlrpc-common-3.1.3.jar;ws-commons-util-1.0.2.jar;commons-logging-1.2.jar;." ChatServer
+
+-Lancement client en mode Console :
+java -cp "xmlrpc-client-3.1.3.jar;xmlrpc-server-3.1.3.jar;xmlrpc-common-3.1.3.jar;ws-commons-util-1.0.2.jar;commons-logging-1.2.jar;." ChatClient
+
+-Lancement client en mode Graphique :
+
+Tester le serveur :
+
+curl -X POST -H "Content-Type: text/xml" --data "<?xml version=\"1.0\"?><methodCall><methodName>ChatRoom.envoyerMessage</methodName><params><param><value><string>Bonjour serveur !</string></value></param></params></methodCall>" http://localhost:8080/xmlrpc
+
+Type de contenu en XML, content-type avec le nom de la méthode, paramètre etc...

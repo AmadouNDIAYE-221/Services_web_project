@@ -1,0 +1,17 @@
+# 1. Compiler tous les fichiers
+javac ChatRoom.java ChatUser.java ChatRoomImpl.java ChatUserImpl.java ChatServer.java ChatClient.java
+
+# 2. Lancer le serveur (terminal 1)
+java ChatServer
+
+# 3. Lancer autant de clients que souhaité (terminaux 2, 3, ...)
+java ChatClient
+java ChatClient
+
+
+Étape 1 : trouver le processus
+netstat -ano | findstr 1099 //Port : 1099
+
+Étape 1 : trouver le processus
+taskkill /PID 1234 /F
+

@@ -1,0 +1,15 @@
+javac ChatRoom.java ChatServer.java ChatClient.java
+
+# Terminal 1 — serveur
+java ChatServer
+
+# Terminal 2, 3... — clients
+java ChatClient
+java ChatClient
+
+# Test rapide avec curl
+curl -X POST "http://localhost:8080/chat/subscribe?pseudo=Alice"
+curl -X POST "http://localhost:8080/chat/messages?pseudo=Alice&message=Bonjour"
+curl "http://localhost:8080/chat/messages?from=0"
+curl "http://localhost:8080/chat/users"
+curl -X DELETE "http://localhost:8080/chat/unsubscribe?pseudo=Alice"

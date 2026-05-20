@@ -1,0 +1,10 @@
+javac -cp ".;lib/*" chat/*.java
+
+java -cp ".;lib/*" chat.ChatServer
+
+java -cp ".;lib/*" chat.ChatClient
+
+En mode Graphique :
+
+java -cp ".;lib/*" chat.ChatClientGUI
+
