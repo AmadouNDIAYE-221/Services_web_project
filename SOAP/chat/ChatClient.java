@@ -1,65 +1,45 @@
 package chat;
 
-
-import javax.xml.namespace.QName;
-import jakarta.xml.ws.Service;
 import java.net.URL;
-import java.util.Scanner;
+import jakarta.xml.ws.Service;
+import javax.xml.namespace.QName;
 
+/**
+ * Client console du Chat SOAP — mis à jour pour les nouvelles signatures
+ * getMessageCount(pseudo) et getMessages(pseudo, fromIndex)
+ */
 public class ChatClient {
 
     public static void main(String[] args) throws Exception {
-        // Paramètres du service SOAP
+
         URL    wsdlURL  = new URL("http://localhost:9090/chat?wsdl");
         QName  svcName  = new QName("http://chat/", "ChatRoomImplService");
         QName  portName = new QName("http://chat/", "ChatRoomImplPort");
-
         Service service = Service.create(wsdlURL, svcName);
         IChatRoom room  = service.getPort(portName, IChatRoom.class);
 
-        Scanner scanner = new Scanner(System.in);
+        String pseudo = args.length > 0 ? args[0] : "Console";
 
-        // 1. S'inscrire
-        System.out.print("Entrez votre pseudo : ");
-        String pseudo = scanner.nextLine().trim();
-        System.out.println("Serveur : " + room.subscribe(pseudo));
-        System.out.println("=== Tapez 'exit' pour quitter ===\n");
+        // Connexion
+        System.out.println(room.subscribe(pseudo));
 
-        // 2. Thread de polling
-        final int[] lastIndex = {0};
-        Thread poller = new Thread(() -> {
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    int count = room.getMessageCount();
-                    if (count > lastIndex[0]) {
-                        String[] msgs = room.getMessages(lastIndex[0]);
-                        for (String msg : msgs) System.out.println(msg);
-                        lastIndex[0] = count;
-                    }
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                } catch (Exception e) {
-                    System.err.println("Erreur polling : " + e.getMessage());
-                }
-            }
-        });
-        poller.setDaemon(true);
-        poller.start();
+        // Polling simple en console
+        int[] lastIndex = {0};
 
-        // 3. Boucle d'envoi
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try { room.unsubscribe(pseudo); } catch (Exception ignored) {}
+        }));
+
         while (true) {
-            String message = scanner.nextLine();
-            if (message.equalsIgnoreCase("exit")) {
-                room.unsubscribe(pseudo);
-                System.out.println("Déconnecté.");
-                break;
+            // ── Nouvelles signatures ──────────────────────────────────────
+            int count = room.getMessageCount(pseudo);   // String pseudo requis
+            if (count > lastIndex[0]) {
+                String[] msgs = room.getMessages(pseudo, lastIndex[0]); // pseudo + index
+                for (String m : msgs) System.out.println(m);
+                lastIndex[0] = count;
             }
-            if (!message.isEmpty()) {
-                room.postMessage(pseudo, message);
-            }
+            Thread.sleep(1000);
         }
-        poller.interrupt();
-        scanner.close();
+
     }
 }
